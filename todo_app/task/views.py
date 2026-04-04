@@ -1,4 +1,6 @@
 from django.views.generic import ListView
+from django.views.generic import CreateView
+from django.urls import reverse_lazy
 from .models import Task
 
 
@@ -16,3 +18,12 @@ class TaskList(ListView):
         context["search_input"] = search_input
         return context
     
+
+class TaskCreate(CreateView):
+    model = Task
+    fields = ["title", "description", "completed", "due_date"]
+    success_url = reverse_lazy("tasks")
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super(TaskCreate, self).form_valid(form)

@@ -1,0 +1,28 @@
+<div>
+    <h1>Task List</h1>
+    <from method = "GET" style="display: flex; gap: 10px; margin-bottom: 20px;">
+        <input type="text" name="search-area" value={{search_input}} placeholder="Search tasks...  ">
+        <button type="submit">Search</button>
+    </from>
+    {% if tasks| length>0%}
+    <a href="#">Add Task</a>
+    {% endif %}
+</div>
+<div>
+    {% for task in tasks %}
+        <div>
+            {% if task.complete %}
+            <i><s><a href="#">{{ task}}</a></s></i>
+            {% else %}
+            <a href="#">{{ task.title }}</a>
+            {% endif %}
+        </div>
+        <a href="#">Delete</a>
+</div>
+ {% empty %}
+<div>
+    <h3>No Task created</h3>
+    <h3>Create a <a href="#">New Task</a></h3>
+</div>
+
+{% endfor %}
