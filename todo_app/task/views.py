@@ -2,6 +2,7 @@ from django.views.generic import ListView
 from django.views.generic import CreateView
 from django.views.generic import DetailView
 from django.views.generic import UpdateView
+from django.views.generic import DeleteView
 from django.urls import reverse_lazy
 from .models import Task
 
@@ -39,3 +40,12 @@ class TaskUpdate(UpdateView):
     model = Task
     fields = ["title", "description", "completed", "due_date"]
     success_url = reverse_lazy("tasks")
+
+class DeleteView(DeleteView):
+    model = Task
+    context_object_name = "task"
+    success_url = reverse_lazy("tasks")
+
+    def get_queryset(self):
+        owner = self.request.user
+        return self.model.objects.filter(user=owner)
