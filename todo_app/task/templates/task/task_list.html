@@ -4,8 +4,8 @@
         <input type="text" name="search-area" value={{search_input}} placeholder="Search tasks...  ">
         <button type="submit">Search</button>
     </from>
-    {% if tasks| length>0%}
-    <a href="#">Add Task</a>
+    {% if tasks %}
+    <a href="{% url 'task-create' %}">Add Task</a>
     {% endif %}
 </div>
 <div>
@@ -22,7 +22,7 @@
  {% empty %}
 <div>
     <h3>No Task created</h3>
-    <h3>Create a <a href="#">New Task</a></h3>
+    <h3>Create a <a href="{% url 'task-create' %}">New Task</a></h3>
 </div>
 
 {% endfor %}

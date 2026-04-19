@@ -9,7 +9,10 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import UserPassesTestMixin
 from .models import Task
+from typing import Any
 
 
 class CustomLoginView(LoginView):
@@ -19,21 +22,7 @@ class CustomLoginView(LoginView):
 
     def get_success_url(self):
         return reverse_lazy("tasks")
-
-class TaskList(ListView):
-    model = Task
-    context_object_name = "tasks"
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["tasks"] = context["tasks"].filter(user=self.request.user)
-
-        search_input = self.request.GET.get("search-area") or ""
-        if search_input:
-            context["tasks"] = context["tasks"].filter(title__contains=search_input)
-        
-        context["search_input"] = search_input
-        return context
-
+    
 class RegisterPage(FormView):
     template_name = "task/register.html"
     form_class = UserCreationForm
@@ -51,7 +40,23 @@ class RegisterPage(FormView):
             return redirect("tasks")
         return super(RegisterPage, self).get(*args, **kwargs)
 
-class TaskCreate(CreateView):
+class TaskList(LoginRequiredMixin, ListView):
+    model = Task
+    context_object_name = "tasks"
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["tasks"] = context["tasks"].filter(user=self.request.user)
+
+        search_input = self.request.GET.get("search-area") or ""
+        if search_input:
+            context["tasks"] = context["tasks"].filter(title__contains=search_input)
+        
+        context["search_input"] = search_input
+        return context
+
+
+
+class TaskCreate(LoginRequiredMixin, CreateView):
     model = Task
     fields = ["title", "description", "completed", "due_date"]
     success_url = reverse_lazy("tasks")
@@ -60,17 +65,17 @@ class TaskCreate(CreateView):
         form.instance.user = self.request.user
         return super(TaskCreate, self).form_valid(form)
     
-class TaskDetail(DetailView):
+class TaskDetail(LoginRequiredMixin, DetailView):
     model = Task
     context_object_name = "task"
     template_name = "task/task_detail.html"
 
-class TaskUpdate(UpdateView):
+class TaskUpdate(LoginRequiredMixin, UpdateView):
     model = Task
     fields = ["title", "description", "completed", "due_date"]
     success_url = reverse_lazy("tasks")
 
-class DeleteView(DeleteView):
+class DeleteView(LoginRequiredMixin, DeleteView):
     model = Task
     context_object_name = "task"
     success_url = reverse_lazy("tasks")

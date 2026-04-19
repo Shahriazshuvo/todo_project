@@ -1,5 +1,5 @@
 from django.contrib import admin
-from todo_app.task.models import Task
+from .models import Task
 
 # Register your models here.
 
