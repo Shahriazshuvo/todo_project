@@ -12,12 +12,12 @@
     {% for task in tasks %}
         <div>
             {% if task.complete %}
-            <i><s><a href="#">{{ task}}</a></s></i>
+            <i><s><a href="{% url 'task-detail' task.pk %}">{{ task}}</a></s></i>
             {% else %}
-            <a href="#">{{ task.title }}</a>
+            <a href="{% url 'task-detail' task.pk %}">{{ task.title }}</a>
             {% endif %}
         </div>
-        <a href="#">Delete</a>
+        <a href="{% url 'task-delete' task.pk %}">Delete</a>
 </div>
  {% empty %}
 <div>
